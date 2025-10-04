@@ -1,5 +1,7 @@
+"use client"
 import React from 'react'
 import { Github } from 'lucide-react';
+import githubOauth from '@/utils/githubOauth';
 
 const Navbar = () => {
   return (
@@ -17,7 +19,7 @@ const Navbar = () => {
           <a href="#integrations" className="hover:text-white transition">Integrations</a>
           <a href="#faq" className="hover:text-white transition">FAQ</a>
         </div>
-        <button className="\w-full flex items-center justify-center gap-2 bg-black/60 border border-white/20 rounded-lg py-3 px-4 hover:bg-black/80 transition text-white font-semiboldr">
+        <button onClick={githubOauth} className="\w-full flex items-center justify-center gap-2 bg-black/60 border border-white/20 rounded-lg py-3 px-4 hover:bg-black/80 transition text-white font-semiboldr">
            <Github size={20} />  Get Started with GitHub
         </button>
       </nav>
