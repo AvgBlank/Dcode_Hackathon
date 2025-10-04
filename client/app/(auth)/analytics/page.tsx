@@ -216,34 +216,35 @@ export default function AnalyticsPage() {
                         type="monotone"
                         dataKey="reviews"
                         stackId="1"
-                        stroke="#3b82f6"
-                        fill="#3b82f6"
-                        fillOpacity={0.6}
+                        stroke="#3B82F6"  // soft blue stroke
+                        fill="#3B82F6"    // soft blue fill
+                        fillOpacity={0.9}
                       />
                       <Area
                         type="monotone"
                         dataKey="issues"
                         stackId="1"
-                        stroke="#f59e0b"
-                        fill="#f59e0b"
-                        fillOpacity={0.6}
+                        stroke="#10B981"  // soft green stroke
+                        fill="#10B981"    // soft green fill
+                        fillOpacity={0.9}
                       />
                       <Area
                         type="monotone"
                         dataKey="discussions"
                         stackId="1"
-                        stroke="#8b5cf6"
-                        fill="#8b5cf6"
-                        fillOpacity={0.6}
+                        stroke="#8B5CF6"  // soft purple stroke
+                        fill="#8B5CF6"
+                        fillOpacity={0.9}
                       />
                       <Area
                         type="monotone"
                         dataKey="merges"
                         stackId="1"
-                        stroke="#10b981"
-                        fill="#10b981"
-                        fillOpacity={0.6}
+                        stroke="#F59E0B"
+                        fill="#F59E0B"
+                        fillOpacity={0.9}
                       />
+
                     </AreaChart>
                   </ResponsiveContainer>
                 </ChartContainer>

@@ -50,7 +50,7 @@ export default function ProfilePage() {
       />
 
       <div className="flex-1 space-y-6 p-4 md:p-8">
-        <div className="grid gap-6 lg:grid-cols-3">
+        {/* <div className="grid gap-6 lg:grid-cols-3">
           <Card className="bg-gradient-to-br from-card to-secondary/30 border-border lg:col-span-1">
             <CardContent className="pt-6 md:pt-8">
               <div className="flex flex-col items-center text-center space-y-4 md:space-y-5">
@@ -223,7 +223,203 @@ export default function ProfilePage() {
               </Card>
             </div>
           </div>
+        </div> */}
+        <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
+          {/* --- Left Column: Profile Card --- */}
+          <Card className="relative lg:col-span-1 overflow-hidden border-white/20 bg-black/40 backdrop-blur-xl">
+  {/* Background Glows */}
+  <div className="absolute -top-1/4 -left-1/4 h-1/2 w-1/2 rounded-full bg-orange-500/30 blur-[100px]" />
+  <div className="absolute -bottom-1/4 -right-1/4 h-1/2 w-1/2 rounded-full bg-blue-500/30 blur-[100px]" />
+
+  <CardContent className="relative z-10 pt-8">
+    {/* Main row with all content flexed horizontally */}
+    <div className="flex flex-row items-center justify-between space-x-6 text-white">
+      
+      {/* Avatar + Star */}
+      <div className="relative flex-shrink-0">
+        <div className="flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 via-amber-500 to-yellow-500 text-4xl font-bold text-white shadow-lg shadow-orange-500/20">
+          JM
         </div>
+        <div className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full border-4 border-black/50 bg-amber-400">
+          <Star className="h-4 w-4 text-black fill-black" />
+        </div>
+      </div>
+
+      {/* Textual info vertically stacked */}
+      <div className="flex flex-col justify-center space-y-2 flex-grow">
+        <h2 className="text-2xl font-bold">John Maintainer</h2>
+        <p className="font-medium text-gray-400">@johnmaint</p>
+        <Badge className="gap-1.5 border border-white/20 bg-white/10 text-gray-300 w-max">
+          <Award className="h-3.5 w-3.5" />
+          Core Maintainer
+        </Badge>
+        <p className="text-sm leading-relaxed text-gray-400 max-w-sm">
+          Open source maintainer passionate about building developer tools and fostering inclusive communities.
+        </p>
+        <div className="flex gap-6 text-sm text-gray-400 mt-2">
+          <div className="flex items-center gap-2">
+            <MapPin className="h-4 w-4" />
+            <span>San Francisco, CA</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Calendar className="h-4 w-4" />
+            <span>Maintaining since 2020</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* Social links row below with minimal height */}
+    <div className="w-full pt-4">
+      <div className="grid grid-cols-4 gap-2">
+        <Button className="h-10 w-full border border-white/10 bg-black/30 hover:bg-white/10">
+          <Twitter className="h-4 w-4" />
+        </Button>
+        <Button className="h-10 w-full border border-white/10 bg-black/30 hover:bg-white/10">
+          <Linkedin className="h-4 w-4" />
+        </Button>
+        <Button className="h-10 w-full border border-white/10 bg-black/30 hover:bg-white/10">
+          <Mail className="h-4 w-4" />
+        </Button>
+        <Button className="h-10 w-full border border-white/10 bg-black/30 hover:bg-white/10">
+          <LinkIcon className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
+  </CardContent>
+</Card>
+
+
+          {/* --- Right Column: Summary and Stats --- */}
+          <div className="flex space-x-8">
+  {/* Left section - 75% width */}
+  <div className="w-3/4">
+    <Card className="border-white/20 bg-black/40">
+      <CardHeader>
+        <CardTitle className="text-white">Contribution Summary</CardTitle>
+        <CardDescription>
+          Your maintainer impact at a glance
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {/* PR Reviews */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="flex items-center gap-2 text-xl font-medium text-white">
+                <div className="rounded-md bg-blue-500/10 p-1.5">
+                  <GitPullRequest className="h-4 w-4 text-blue-400" />
+                </div>
+                PR Reviews
+              </span>
+              <span className="text-lg font-bold text-white">247</span>
+            </div>
+            <Progress value={85} />
+            <p className="text-md text-gray-400">85% of monthly goal</p>
+          </div>
+          {/* Issues Triaged */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="flex items-center gap-2 text-xl font-medium text-white">
+                <div className="rounded-md bg-orange-500/10 p-1.5">
+                  <AlertCircle className="h-4 w-4 text-orange-400" />
+                </div>
+                Issues Triaged
+              </span>
+              <span className="text-md font-bold text-white">189</span>
+            </div>
+            <Progress value={75} />
+            <p className="text-xs text-gray-400">75% of monthly goal</p>
+          </div>
+          {/* Discussions */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="flex items-center gap-2 text-xl font-medium text-white">
+                <div className="rounded-md bg-green-500/10 p-1.5">
+                  <MessageSquare className="h-4 w-4 text-green-400" />
+                </div>
+                Discussions
+              </span>
+              <span className="text-lg font-bold text-white">156</span>
+            </div>
+            <Progress value={65} />
+            <p className="text-md text-gray-400">65% of monthly goal</p>
+          </div>
+          {/* Docs Updated */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="flex items-center gap-2 text-xl font-medium text-white">
+                <div className="rounded-md bg-purple-500/10 p-1.5">
+                  <FileText className="h-4 w-4 text-purple-400" />
+                </div>
+                Docs Updated
+              </span>
+              <span className="text-lg font-bold text-white">42</span>
+            </div>
+            <Progress value={55} />
+            <p className="text-md text-gray-400">55% of monthly goal</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  </div>
+
+  {/* Right section - 25% width */}
+  <div className="w-1/4">
+    <div className=" gap-6">
+      <Card className="bg-gradient-to-br from-blue-500/15 to-blue-500/5 border-blue-500/20 mb-2 ">
+        <CardHeader className="pb-0">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-medium text-gray-400">
+              Total Contributions
+            </CardTitle>
+            <TrendingUp className="h-4 w-4 text-blue-400" />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="text-3xl font-bold text-white">1,247</div>
+          <p className="mt-2 flex items-center gap-1.5 text-xs text-gray-400">
+            <span className="font-medium text-green-400">+18%</span> from last month
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-gradient-to-br from-green-500/15 to-green-500/5 border-green-500/20 mb-2">
+        <CardHeader className="pb-0">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-medium text-gray-400">
+              Repositories
+            </CardTitle>
+            <Github className="h-4 w-4 text-green-400" />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="text-3xl font-bold text-white">12</div>
+          <p className="mt-2 text-xs text-gray-400">Actively maintained</p>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-gradient-to-br from-purple-500/15 to-purple-500/5 border-purple-500/20">
+        <CardHeader className="pb-0">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-medium text-gray-400">
+              Response Time
+            </CardTitle>
+            <Clock className="h-4 w-4 text-purple-400" />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="text-3xl font-bold text-white">2.4h</div>
+          <p className="mt-2 text-xs text-gray-400">Average response</p>
+        </CardContent>
+      </Card>
+    </div>
+  </div>
+</div>
+
+        </div>
+      </div>
 
         <Tabs defaultValue="cv" className="w-full">
           <TabsList className="bg-secondary/50 border border-border h-auto flex-wrap justify-start">
