@@ -1,0 +1,15 @@
+# Cache
+.next
+
+# Out
+dist
+
+# Dependencies
+node_modules
+
+# Environment Variables
+.env
+
+# OS Files
+.DS_Store
+
