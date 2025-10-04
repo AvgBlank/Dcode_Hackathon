@@ -65,7 +65,7 @@ const MaintainerDashboardPlan = () => {
 
         {/* Central sphere with GitHub Icon */}
         <div 
-          className="absolute rounded-full bg-gradient-to-br from-blue-600/50 to-orange-900/80 flex items-center justify-center"
+          className="absolute rounded-full bg-gradient-to-br from-blue-600/80 to-orange-700/80 flex items-center justify-center"
           style={{
             width: `${centralSphereSize * 0.4}px`, 
             height: `${centralSphereSize * 0.4}px`,
