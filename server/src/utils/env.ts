@@ -7,6 +7,8 @@ const envSchema = z.object({
   GH_CLIENT_ID: z.string().min(1, "GH_CLIENT_ID is required"),
   GH_CLIENT_SECRET: z.string().min(1, "GH_CLIENT_SECRET is required"),
   GH_REDIRECT_URI: z.url().min(1),
+  FRONTEND_URL: z.url(),
+  DATABASE_URL: z.string().min(1),
   PORT: z.string().prefault("8000"),
 });
 
@@ -16,4 +18,11 @@ if (!success) {
   process.exit(1);
 }
 
-export const { GH_CLIENT_ID, GH_CLIENT_SECRET, GH_REDIRECT_URI, PORT } = data;
+export const {
+  GH_CLIENT_ID,
+  GH_CLIENT_SECRET,
+  GH_REDIRECT_URI,
+  FRONTEND_URL,
+  PORT,
+  DATABASE_URL,
+} = data;
