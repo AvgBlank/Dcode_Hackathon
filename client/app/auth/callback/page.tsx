@@ -24,9 +24,8 @@ export default async () => {
           const errorText = await res.text();
           throw new Error(errorText);
         }
-
-        router.push("/overview");
       }
+      router.push("/overview");
     };
 
     sendCodeToBackend();

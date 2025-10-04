@@ -12,6 +12,6 @@ export default async () => {
   localStorage.setItem("latestCSRFToken", state);
 
   // redirect the user to github
-  const link = `https://github.com/login/oauth/authorize?client_id=${GH_CLIENT_ID}&response_type=code&scope=repo&redirect_uri=${GH_REDIRECT_URI}/integrations/github/oauth2/callback&state=${state}`;
+  const link = `https://github.com/login/oauth/authorize?client_id=${GH_CLIENT_ID}&response_type=code&scope=repo&redirect_uri=${GH_REDIRECT_URI}&state=${state}`;
   window.location.assign(link);
 };
