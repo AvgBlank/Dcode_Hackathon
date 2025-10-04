@@ -131,7 +131,7 @@ export default function HistoryPage() {
       <Header title={history.title} subtitle={history.description} />
 
       <div className="flex-1 p-4 md:p-8">
-        <Breadcrumbs items={[{ label: "Overview", href: "/" }, { label: history.title }]} />
+        <Breadcrumbs items={[{ label: "Overview", href: "/overview" }, { label: history.title }]} />
 
         <Card className="bg-card border-border mt-6">
           <CardHeader>

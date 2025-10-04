@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 const navigation = [
-  { name: "Overview", href: "/", icon: LayoutDashboard },
+  { name: "Overview", href: "/overview", icon: LayoutDashboard },
   { name: "Repositories", href: "/repositories", icon: FolderGit2 },
   { name: "Analytics", href: "/analytics", icon: BarChart3 },
   { name: "Triage Center", href: "/triage", icon: ListTodo },
