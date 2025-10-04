@@ -195,27 +195,16 @@ export default function AnalyticsPage() {
                 <CardDescription>Your contributions across different categories</CardDescription>
               </CardHeader>
               <CardContent>
-                <ChartContainer
-                  config={{
-                    reviews: {
-                      label: "PR Reviews",
-                      color: "hsl(var(--chart-1))",
-                    },
-                    issues: {
-                      label: "Issues Triaged",
-                      color: "hsl(var(--chart-4))",
-                    },
-                    discussions: {
-                      label: "Discussions",
-                      color: "hsl(var(--chart-2))",
-                    },
-                    merges: {
-                      label: "PRs Merged",
-                      color: "hsl(var(--chart-3))",
-                    },
-                  }}
-                  className="h-[400px]"
-                >
+
+  <ChartContainer
+  config={{
+    reviews: { label: "PR Reviews", color: "#FFC300" },
+    issues: { label: "Issues Triaged", color: "#FF5733" },
+    discussions: { label: "Discussions", color: "#28A745" },
+    merges: { label: "PRs Merged", color: "#33C1FF" },
+  }}
+  className="h-[400px]"
+>
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={activityData}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />

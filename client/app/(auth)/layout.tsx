@@ -50,7 +50,6 @@ export default function RootLayout({
               <Sidebar />
               <main className="flex-1 overflow-y-auto">
                 {/* Pass required title prop to Header */}
-                <Header title="Maintainer Hub" />
                 {children}
               </main>
             </div>
