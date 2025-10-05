@@ -7,7 +7,7 @@ import { Plus, Minus } from 'lucide-react';
 
 const faqData = [
   {
-    question: 'What problem does the Maintainer Dashboard solve?',
+    question: 'What problem does the RepoDesk solve?',
     answer: `It helps open-source maintainers deal with scattered information, stale or claimed issues, and low recognition for contributors—reducing burnout and improving community efficiency.`,
   },
   {
@@ -94,7 +94,7 @@ const FaqSection = () => {
                 Frequently Asked Questions
             </h2>
             <p className="text-gray-400 mt-3 max-w-2xl mx-auto">
-                Everything you need to know about the Maintainer Dashboard project, from its purpose to its tech stack.
+                Everything you need to know about the RepoDesk project, from its purpose to its tech stack.
             </p>
         </div>
 

@@ -9,7 +9,7 @@ import Card from "./section/card";
 import Footer from "../../components/footer";
 export default function App() {
   return (
-    <div className="min-h-screen bg-black text-white font-sans">
+    <div className="min-h-screen font-[Quicksand] bg-black text-white font-sans">
       <HeroSection />
       <DashboarUi />
       <Features />

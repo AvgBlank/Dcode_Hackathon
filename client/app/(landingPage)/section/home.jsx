@@ -1,9 +1,11 @@
+"use client";
 import React from "react";
 import Navbar from "../../../components/navbar";
-import NeonGradientShape from "./neonGradientShape";
+// import NeonGradientShape from "./neonGradientShape";
 import Image from "next/image";
-import dashboardImg from "../../../public/landingPageImage/hero1.png";
+import dashboardImg from "../../../public/landingPageImage/hero3.png";
 import Link from "next/link";
+import githubOauth from '@/utils/githubOauth';
 export default function HeroSection() {
   return (
     <div
@@ -22,7 +24,7 @@ export default function HeroSection() {
               OPEN SOURCE DASHBOARD
             </span>
           </div>
-          <h1 className="mt-7 text-6xl font-extrabold leading-[1.1] max-w-3xl">
+          <h1 className="mt-7  text-6xl font-extrabold leading-[1.1] max-w-3xl">
             Your Repositories.
             <br />
             Fully Under Control.
@@ -32,13 +34,13 @@ export default function HeroSection() {
             and keep your projects healthy, all in one place.
           </p>
           <div className="mt-12 flex space-x-6">
-            <Link href="/login">
-            <button className="px-8 py-3 rounded-lg text-lg font-semibold bg-gradient-to-r from-orange-500 to-blue-700 text-white border-orange-400 shadow-orange-500/30 shadow-lg hover:from-orange-400 hover:to-blue-500 transition-all">
+            <button onClick={githubOauth} className="px-8 py-3 cursor-pointer rounded-lg text-lg font-semibold bg-gradient-to-r from-orange-500 to-blue-700 text-white border-orange-400 shadow-orange-500/30 shadow-lg hover:from-orange-400 hover:to-blue-500 transition-all">
               Get Started
-            </button></Link>
-            <button className="px-8 py-3 rounded-lg text-lg font-medium bg-gradient-to-r from-orange-500 to-blue-700 text-white border border-gray-200 hover:border-blue-400 transition-all">
-              Explore Dashboard
             </button>
+            <Link href="/overview">
+            <button className="px-8 py-3 rounded-lg cursor-pointer text-lg font-medium bg-gradient-to-r from-orange-500 to-blue-700 text-white border border-gray-200 hover:border-blue-400 transition-all">
+              Explore Dashboard
+            </button></Link>
           </div>
         </div>
 
@@ -55,7 +57,7 @@ export default function HeroSection() {
       </main>
 
      
-      <NeonGradientShape />
+      {/* <NeonGradientShape /> */}
     </div>
   );
 }

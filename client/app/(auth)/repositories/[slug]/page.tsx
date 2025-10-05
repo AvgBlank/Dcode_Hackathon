@@ -25,7 +25,7 @@ export default async function RepositoryDetailPage({ params }: { params: Promise
     <div className="flex flex-col">
       <Header
         title={slug}
-        subtitle="Repository maintainer dashboard"
+        subtitle="Repository RepoDesk"
         actions={
           <Button variant="outline" className="gap-2 bg-transparent">
             <ExternalLink className="h-4 w-4" />
