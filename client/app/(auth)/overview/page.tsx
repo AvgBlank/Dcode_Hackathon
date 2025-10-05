@@ -68,7 +68,7 @@ export default function OverviewPage() {
       />
 
       <div className="flex-1 p-4 md:p-8">
-        <Breadcrumbs items={[{ label: "Overview" }]} />
+        {/* <Breadcrumbs items={[{ label: "Overview" }]} /> */}
 
         <div className="space-y-6">
           <div className="flex justify-end">
