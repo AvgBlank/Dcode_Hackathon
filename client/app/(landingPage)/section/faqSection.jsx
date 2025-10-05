@@ -14,35 +14,22 @@ const faqData = [
     question: 'How does the dashboard provide a unified view?',
     answer: `It fetches issues, PRs, reviews, comments, and stars from the GitHub API and presents them in a clean, easy-to-read dashboard with charts and timelines.`,
   },
-  {
-    question: 'What is the "Cookie-Licking Detector"?',
-    answer: `It flags issues that are assigned but inactive for a certain period and can auto-label them or send nudges via Slack/Discord to prevent bottlenecks.`,
-  },
-  {
-    question: 'How does the Celebration feature work?',
-    answer: `It auto-detects milestones like "first PR merged" or "100 stars reached" and triggers celebratory messages on Slack/Discord or LinkedIn to recognize contributors’ achievements.`,
-  },
+   
   {
     question: 'Which tech stack is used?',
     answer: `Frontend: React.js + Chart.js/Recharts | Backend: Node.js (Express) or Python (FastAPI/Flask) | Integrations: GitHub Webhooks, Slack/Discord Webhooks.`,
   },
-  {
-    question: 'What features can we build in 16 hours?',
-    answer: `Phase 1: Repo stats and basic visualizations. Phase 2: The "Cookie-Licking" Detector. Phase 3: The Celebration Engine with auto-generated shoutouts.`,
-  },
+  
   {
     question: 'Can we expand the project further?',
     answer: `Yes! Stretch goals include sentiment analysis of comments, contributor CVs, and gamification badges like "Bug Slayer" or "Code Wizard" for extra engagement.`,
   },
-  {
-    question: 'Why will this impress judges?',
-    answer: `The project is feasible, demo-friendly with charts and Slack shoutouts, includes a unique "cookie-licking detector", and adds a fun celebration layer for engagement.`,
-  },
+  
 ];
 
 // Accordion Item Component
 const AccordionItem = ({ question, answer, isOpen, onClick }) => (
-  <div className="border-b border-white/10 py-5">
+  <div id='faq' className="border-b border-white/10 py-5">
     <button
       onClick={onClick}
       className="flex w-full items-center justify-between text-left gap-4"

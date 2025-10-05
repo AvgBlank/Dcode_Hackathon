@@ -39,7 +39,7 @@ const MaintainerDashboardPlan = () => {
   const centralSphereSize = 400; // Size of the central gradient sphere
 
   return (
-    <div className="relative flex flex-col items-center justify-center min-h-screen w-full bg-black text-white overflow-hidden px-4 pb-8">
+    <div id='integrations' className="relative flex flex-col items-center justify-center min-h-screen w-full bg-black text-white overflow-hidden px-4 pb-8">
       {/* Top Label */}
       <div className="border border-white/20 rounded-full px-4 py-1.5 text-xs font-medium text-orange-300 mb-6">
         FOR OPEN SOURCE MAINTAINERS
