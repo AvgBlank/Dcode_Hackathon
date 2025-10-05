@@ -62,10 +62,12 @@ triageRouter.get(
       res.json({
         success: true,
         data: {
-          needs_review: totalPRsNeedingReview,
-          needs_triage: totalIssuesNeedingTriage,
-          unanswered_discussions: totalDiscussionsUnanswered,
-          critical_items: totalCriticalItems,
+          pendingReviews: totalPRsNeedingReview,
+          openIssues: totalIssuesNeedingTriage,
+          discussionsNeedingResponse: totalDiscussionsUnanswered,
+          priorityItems: totalCriticalItems,
+          avgResponseTime: 2.5, // Default value, could be calculated from actual data
+          thisWeekActivity: totalPRsNeedingReview + totalIssuesNeedingTriage + totalDiscussionsUnanswered,
         },
       });
     } catch (error: any) {
@@ -130,25 +132,24 @@ triageRouter.get(
             id: pr.id,
             number: pr.number,
             title: pr.title,
-            repository: repo.name,
-            owner: repo.owner.login,
-            author: pr.user.login,
-            author_avatar: pr.user.avatar_url,
-            status: determinePRStatus(pr),
+            state: pr.state as "open" | "closed" | "merged",
+            repository: {
+              name: repo.name,
+              owner: repo.owner.login,
+            },
+            author: {
+              login: pr.user.login,
+              avatarUrl: pr.user.avatar_url,
+            },
             priority: determinePriority(pr),
             labels: pr.labels.map((label) => ({
               name: label.name,
               color: label.color,
             })),
-            comments: pr.comments,
-            review_comments: pr.review_comments,
-            additions: pr.additions,
-            deletions: pr.deletions,
-            changed_files: pr.changed_files,
-            created_at: pr.created_at,
-            updated_at: pr.updated_at,
-            html_url: pr.html_url,
-            draft: pr.draft,
+            createdAt: pr.created_at,
+            updatedAt: pr.updated_at,
+            requestedReviewers: pr.requested_reviewers?.map((reviewer: any) => reviewer.login) || [],
+            assignees: pr.assignees?.map((assignee: any) => assignee.login) || [],
           }));
 
           allPRs.push(...enhancedPRs);
@@ -170,7 +171,7 @@ triageRouter.get(
         }
 
         return (
-          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
         );
       });
 
@@ -235,28 +236,28 @@ triageRouter.get(
           );
 
           // Enhance issue data
-          const enhancedIssues = issues.map((issue) => ({
+          const enhancedIssues = issues.map((issue: any) => ({
             id: issue.id,
             number: issue.number,
             title: issue.title,
-            repository: repo.name,
-            owner: repo.owner.login,
-            author: issue.user.login,
-            author_avatar: issue.user.avatar_url,
-            status: determineIssueStatus(issue),
+            state: issue.state as "open" | "closed",
+            repository: {
+              name: repo.name,
+              owner: repo.owner.login,
+            },
+            author: {
+              login: issue.user.login,
+              avatarUrl: issue.user.avatar_url,
+            },
             priority: determinePriority(issue),
-            labels: issue.labels.map((label) => ({
+            labels: issue.labels.map((label: any) => ({
               name: label.name,
               color: label.color,
             })),
             comments: issue.comments,
-            assignees: issue.assignees.map((assignee) => ({
-              login: assignee.login,
-              avatar_url: assignee.avatar_url,
-            })),
-            created_at: issue.created_at,
-            updated_at: issue.updated_at,
-            html_url: issue.html_url,
+            assignees: issue.assignees.map((assignee: any) => assignee.login),
+            createdAt: issue.created_at,
+            updatedAt: issue.updated_at,
           }));
 
           allIssues.push(...enhancedIssues);
@@ -265,14 +266,8 @@ triageRouter.get(
         }
       }
 
-      // Filter by status if specified
-      let filteredIssues = allIssues;
-      if (status) {
-        filteredIssues = allIssues.filter((issue) => issue.status === status);
-      }
-
       // Sort by priority and recent activity
-      filteredIssues.sort((a, b) => {
+      allIssues.sort((a, b) => {
         const priorityOrder = { critical: 4, high: 3, medium: 2, low: 1 };
         const aPriority =
           priorityOrder[a.priority as keyof typeof priorityOrder] || 0;
@@ -284,13 +279,13 @@ triageRouter.get(
         }
 
         return (
-          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
         );
       });
 
       // Paginate results
       const startIndex = (Number(page) - 1) * Number(per_page);
-      const paginatedIssues = filteredIssues.slice(
+      const paginatedIssues = allIssues.slice(
         startIndex,
         startIndex + Number(per_page)
       );
@@ -301,8 +296,8 @@ triageRouter.get(
         pagination: {
           page: Number(page),
           per_page: Number(per_page),
-          total: filteredIssues.length,
-          total_pages: Math.ceil(filteredIssues.length / Number(per_page)),
+          total: allIssues.length,
+          total_pages: Math.ceil(allIssues.length / Number(per_page)),
         },
       });
     } catch (error: any) {

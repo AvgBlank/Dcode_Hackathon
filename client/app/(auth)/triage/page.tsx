@@ -193,8 +193,16 @@ export default function TriagePage() {
           </TabsList>
 
           <TabsContent value="prs" className="space-y-3 mt-6">
-            {pullRequests.map((pr) => (
-              <Card key={pr.id} className="bg-card border-border">
+            {pullRequests.length === 0 ? (
+              <Card className="bg-card border-border">
+                <CardContent className="p-8 text-center">
+                  <GitPullRequest className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-medium mb-2">No Pull Requests</h3>
+                  <p className="text-muted-foreground">No pull requests need your attention right now.</p>
+                </CardContent>
+              </Card>
+            ) : pullRequests.filter(pr => pr && pr.id).map((pr, index) => (
+              <Card key={`pr-${pr.id}-${index}`} className="bg-card border-border">
                 <CardContent className="p-5">
                   <div className="space-y-3">
                     <div className="flex items-start justify-between gap-3">
@@ -204,9 +212,9 @@ export default function TriagePage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <span>{pr.repository.owner}/{pr.repository.name}</span>
+                      <span>{pr.repository?.owner || 'unknown'}/{pr.repository?.name || 'unknown'}</span>
                       <span>•</span>
-                      <span>{pr.author.login}</span>
+                      <span>{pr.author?.login || 'Unknown'}</span>
                       <span>•</span>
                       <span>{new Date(pr.createdAt).toLocaleDateString()}</span>
                     </div>
@@ -238,11 +246,15 @@ export default function TriagePage() {
                             {pr.priority} priority
                           </Badge>
                         )}
-                        {pr.labels.map((label) => (
-                          <Badge key={label} variant="secondary" className="text-xs">
-                            {label}
-                          </Badge>
-                        ))}
+                        {(pr.labels || []).map((label, index) => {
+                          const labelText = typeof label === 'string' ? label : (label && (label as any).name) || `label-${index}`;
+                          const labelKey = `pr-${pr.id}-label-${index}-${labelText}`;
+                          return (
+                            <Badge key={labelKey} variant="secondary" className="text-xs">
+                              {labelText}
+                            </Badge>
+                          );
+                        })}
                       </div>
                       <div className="flex items-center gap-3 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
@@ -259,7 +271,11 @@ export default function TriagePage() {
                         size="sm" 
                         variant="default" 
                         className="gap-2"
-                        onClick={() => window.open(`https://github.com/${pr.repository.owner}/${pr.repository.name}/pull/${pr.number}`, '_blank')}
+                        onClick={() => {
+                          if (pr.repository?.owner && pr.repository?.name) {
+                            window.open(`https://github.com/${pr.repository.owner}/${pr.repository.name}/pull/${pr.number}`, '_blank');
+                          }
+                        }}
                       >
                         <ExternalLink className="h-4 w-4" />
                         Review PR
@@ -282,8 +298,16 @@ export default function TriagePage() {
           </TabsContent>
 
           <TabsContent value="issues" className="space-y-3 mt-6">
-            {issues.map((issue) => (
-              <Card key={issue.id} className="bg-card border-border">
+            {issues.length === 0 ? (
+              <Card className="bg-card border-border">
+                <CardContent className="p-8 text-center">
+                  <AlertCircle className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-medium mb-2">No Issues</h3>
+                  <p className="text-muted-foreground">No issues need your attention right now.</p>
+                </CardContent>
+              </Card>
+            ) : issues.filter(issue => issue && issue.id).map((issue, index) => (
+              <Card key={`issue-${issue.id}-${index}`} className="bg-card border-border">
                 <CardContent className="p-5">
                   <div className="space-y-3">
                     <div className="flex items-start justify-between gap-3">
@@ -293,9 +317,9 @@ export default function TriagePage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <span>{issue.repository.owner}/{issue.repository.name}</span>
+                      <span>{issue.repository?.owner || 'unknown'}/{issue.repository?.name || 'unknown'}</span>
                       <span>•</span>
-                      <span>{issue.author.login}</span>
+                      <span>{issue.author?.login || 'Unknown'}</span>
                       <span>•</span>
                       <span>{new Date(issue.createdAt).toLocaleDateString()}</span>
                     </div>
@@ -325,11 +349,15 @@ export default function TriagePage() {
                             {issue.priority} priority
                           </Badge>
                         )}
-                        {issue.labels.map((label) => (
-                          <Badge key={label} variant="secondary" className="text-xs">
-                            {label}
-                          </Badge>
-                        ))}
+                        {(issue.labels || []).map((label, index) => {
+                          const labelText = typeof label === 'string' ? label : (label && (label as any).name) || `label-${index}`;
+                          const labelKey = `issue-${issue.id}-label-${index}-${labelText}`;
+                          return (
+                            <Badge key={labelKey} variant="secondary" className="text-xs">
+                              {labelText}
+                            </Badge>
+                          );
+                        })}
                       </div>
                       <div className="flex items-center gap-1 text-sm text-muted-foreground">
                         <MessageSquare className="h-4 w-4" />
@@ -341,7 +369,11 @@ export default function TriagePage() {
                         size="sm" 
                         variant="default" 
                         className="gap-2"
-                        onClick={() => window.open(`https://github.com/${issue.repository.owner}/${issue.repository.name}/issues/${issue.number}`, '_blank')}
+                        onClick={() => {
+                          if (issue.repository?.owner && issue.repository?.name) {
+                            window.open(`https://github.com/${issue.repository.owner}/${issue.repository.name}/issues/${issue.number}`, '_blank');
+                          }
+                        }}
                       >
                         <ExternalLink className="h-4 w-4" />
                         Resolve Issue
@@ -371,15 +403,23 @@ export default function TriagePage() {
           </TabsContent>
 
           <TabsContent value="discussions" className="space-y-3 mt-6">
-            {discussions.map((discussion) => (
-              <Card key={discussion.id} className="bg-card border-border">
+            {discussions.length === 0 ? (
+              <Card className="bg-card border-border">
+                <CardContent className="p-8 text-center">
+                  <MessageSquare className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-medium mb-2">No Discussions</h3>
+                  <p className="text-muted-foreground">No discussions need your attention right now.</p>
+                </CardContent>
+              </Card>
+            ) : discussions.filter(discussion => discussion && discussion.id).map((discussion, index) => (
+              <Card key={`discussion-${discussion.id}-${index}`} className="bg-card border-border">
                 <CardContent className="p-5">
                   <div className="space-y-3">
                     <h3 className="text-base font-semibold text-foreground">{discussion.title}</h3>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <span>{discussion.repository.owner}/{discussion.repository.name}</span>
+                      <span>{discussion.repository?.owner || 'unknown'}/{discussion.repository?.name || 'unknown'}</span>
                       <span>•</span>
-                      <span>{discussion.author.login}</span>
+                      <span>{discussion.author?.login || 'Unknown'}</span>
                       <span>•</span>
                       <span>{new Date(discussion.createdAt).toLocaleDateString()}</span>
                     </div>
@@ -412,7 +452,11 @@ export default function TriagePage() {
                         size="sm" 
                         variant="default" 
                         className="gap-2"
-                        onClick={() => window.open(`https://github.com/${discussion.repository.owner}/${discussion.repository.name}/discussions/${discussion.id}`, '_blank')}
+                        onClick={() => {
+                          if (discussion.repository?.owner && discussion.repository?.name) {
+                            window.open(`https://github.com/${discussion.repository.owner}/${discussion.repository.name}/discussions/${discussion.id}`, '_blank');
+                          }
+                        }}
                       >
                         <ExternalLink className="h-4 w-4" />
                         Join Discussion

@@ -158,7 +158,7 @@ export interface PullRequest {
   createdAt: string;
   updatedAt: string;
   priority?: "high" | "medium" | "low";
-  labels: string[];
+  labels: Array<string | { name: string; color?: string }>;
   requestedReviewers: string[];
   assignees: string[];
 }
@@ -179,7 +179,7 @@ export interface Issue {
   createdAt: string;
   updatedAt: string;
   priority?: "high" | "medium" | "low";
-  labels: string[];
+  labels: Array<string | { name: string; color?: string }>;
   assignees: string[];
   comments: number;
 }
@@ -245,9 +245,10 @@ export class ApiClient {
 
   // User/Profile endpoints
   static async getProfile(): Promise<User> {
-    const response: AxiosResponse<{ success: boolean; data: any }> = await api.get("/user/profile");
+    const response: AxiosResponse<{ success: boolean; data: any }> =
+      await api.get("/user/profile");
     const data = response.data.data;
-    
+
     // Map backend response to frontend interface
     return {
       id: data.id,
@@ -275,18 +276,20 @@ export class ApiClient {
   }
 
   static async shareProfile(): Promise<{ shareUrl: string }> {
-    const response: AxiosResponse<{ success: boolean; data: { share_url: string } }> = await api.post("/user/profile/share");
+    const response: AxiosResponse<{
+      success: boolean;
+      data: { share_url: string };
+    }> = await api.post("/user/profile/share");
     return {
-      shareUrl: response.data.data.share_url
+      shareUrl: response.data.data.share_url,
     };
   }
 
   // Repository endpoints
   static async getRepositories(): Promise<Repository[]> {
-    const response: AxiosResponse<{ success: boolean; data: any[] }> = await api.get(
-      "/repositories"
-    );
-    
+    const response: AxiosResponse<{ success: boolean; data: any[] }> =
+      await api.get("/repositories");
+
     // Map backend response to frontend interface
     return response.data.data.map((repo: any) => ({
       id: repo.id.toString(),
@@ -342,12 +345,11 @@ export class ApiClient {
 
   // Analytics endpoints
   static async getOverviewMetrics(): Promise<MetricsData> {
-    const response: AxiosResponse<{ success: boolean; data: any }> = await api.get(
-      "/analytics/overview"
-    );
-    
+    const response: AxiosResponse<{ success: boolean; data: any }> =
+      await api.get("/analytics/overview");
+
     const data = response.data.data;
-    
+
     // Map backend response to frontend interface
     return {
       totalRepositories: data.summary?.total_repositories || 0,
@@ -368,18 +370,24 @@ export class ApiClient {
       topRepositories: [], // This would need to be populated from recent_activity
       activityTrend: (data.activity_data || []).map((item: any) => ({
         date: item.date,
-        value: (item.prs_reviewed || 0) + (item.issues_triaged || 0) + (item.commits_made || 0),
+        value:
+          (item.prs_reviewed || 0) +
+          (item.issues_triaged || 0) +
+          (item.commits_made || 0),
       })),
-      reviewSentiment: data.sentiment_data || { approved: 0, changesRequested: 0, commented: 0 },
+      reviewSentiment: data.sentiment_data || {
+        approved: 0,
+        changesRequested: 0,
+        commented: 0,
+      },
       timeInvestment: data.time_investment || [],
       responseTimeData: data.response_time_data || [],
     };
   }
 
   static async getDetailedAnalytics(): Promise<AnalyticsData> {
-    const response: AxiosResponse<{ success: boolean; data: AnalyticsData }> = await api.get(
-      "/analytics/detailed"
-    );
+    const response: AxiosResponse<{ success: boolean; data: AnalyticsData }> =
+      await api.get("/analytics/detailed");
     return response.data.data;
   }
 
@@ -398,71 +406,66 @@ export class ApiClient {
 
   // Triage endpoints
   static async getTriageStats(): Promise<TriageStats> {
-    const response: AxiosResponse<{ success: boolean; data: TriageStats }> = await api.get("/triage/stats");
+    const response: AxiosResponse<{ success: boolean; data: TriageStats }> =
+      await api.get("/triage/stats");
     return response.data.data;
   }
 
   static async getPullRequests(): Promise<PullRequest[]> {
-    const response: AxiosResponse<{ success: boolean; data: PullRequest[] }> = await api.get(
-      "/triage/pull-requests"
-    );
+    const response: AxiosResponse<{ success: boolean; data: PullRequest[] }> =
+      await api.get("/triage/pull-requests");
     return response.data.data;
   }
 
   static async getIssues(): Promise<Issue[]> {
-    const response: AxiosResponse<{ success: boolean; data: Issue[] }> = await api.get("/triage/issues");
+    const response: AxiosResponse<{ success: boolean; data: Issue[] }> =
+      await api.get("/triage/issues");
     return response.data.data;
   }
 
   static async getDiscussions(): Promise<Discussion[]> {
-    const response: AxiosResponse<{ success: boolean; data: Discussion[] }> = await api.get(
-      "/triage/discussions"
-    );
+    const response: AxiosResponse<{ success: boolean; data: Discussion[] }> =
+      await api.get("/triage/discussions");
     return response.data.data;
   }
 
   // History endpoints
   static async getPRHistory(): Promise<HistoryItem[]> {
-    const response: AxiosResponse<{ success: boolean; data: HistoryItem[] }> = await api.get(
-      "/history/prs"
-    );
+    const response: AxiosResponse<{ success: boolean; data: HistoryItem[] }> =
+      await api.get("/history/prs");
     return response.data.data;
   }
 
   static async getIssueHistory(): Promise<HistoryItem[]> {
-    const response: AxiosResponse<{ success: boolean; data: HistoryItem[] }> = await api.get(
-      "/history/issues"
-    );
+    const response: AxiosResponse<{ success: boolean; data: HistoryItem[] }> =
+      await api.get("/history/issues");
     return response.data.data;
   }
 
   static async getDiscussionHistory(): Promise<HistoryItem[]> {
-    const response: AxiosResponse<{ success: boolean; data: HistoryItem[] }> = await api.get(
-      "/history/discussions"
-    );
+    const response: AxiosResponse<{ success: boolean; data: HistoryItem[] }> =
+      await api.get("/history/discussions");
     return response.data.data;
   }
 
   static async getCommentHistory(): Promise<HistoryItem[]> {
-    const response: AxiosResponse<{ success: boolean; data: HistoryItem[] }> = await api.get(
-      "/history/comments"
-    );
+    const response: AxiosResponse<{ success: boolean; data: HistoryItem[] }> =
+      await api.get("/history/comments");
     return response.data.data;
   }
 
   // Settings endpoints
   static async getSettings(): Promise<UserSettings> {
-    const response: AxiosResponse<{ success: boolean; data: UserSettings }> = await api.get("/settings");
+    const response: AxiosResponse<{ success: boolean; data: UserSettings }> =
+      await api.get("/settings");
     return response.data.data;
   }
 
   static async updateSettings(
     data: Partial<UserSettings>
   ): Promise<UserSettings> {
-    const response: AxiosResponse<{ success: boolean; data: UserSettings }> = await api.put(
-      "/settings",
-      data
-    );
+    const response: AxiosResponse<{ success: boolean; data: UserSettings }> =
+      await api.put("/settings", data);
     return response.data.data;
   }
 
