@@ -31,7 +31,7 @@ const _sourceSerif_4 = V0_Font_Source_Serif_4({
 });
 
 export const metadata: Metadata = {
-  title: "Maintainer Hub - Dashboard for Open Source Maintainers",
+  title: "RepoDesk - Dashboard for Open Source Maintainers",
   description:
     "Track your invisible labor and showcase your maintainer contributions",
   generator: "v0.app",

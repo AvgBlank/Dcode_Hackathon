@@ -111,8 +111,8 @@ export default function RepositoryDetailPage({ params }: { params: Promise<{ slu
   return (
     <div className="flex flex-col">
       <Header
-        title={repository.name}
-        subtitle={`Repository maintainer dashboard - ${repository.fullName}`}
+        title={slug}
+        subtitle="Repository RepoDesk"
         actions={
           <Button 
             variant="outline" 

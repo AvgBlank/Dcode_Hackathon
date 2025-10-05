@@ -71,7 +71,7 @@ export function Sidebar() {
     <div className="hidden md:flex h-screen w-64 flex-col border-r border-border bg-sidebar">
       <div className="flex h-16 items-center gap-2 border-b border-border px-6">
         <Github className="h-6 w-6 text-primary" />
-        <span className="text-lg font-semibold text-foreground">Maintainer Hub</span>
+        <span className="text-lg font-semibold text-foreground">RepoDesk</span>
       </div>
 
       <nav className="flex-1 space-y-1 p-4">

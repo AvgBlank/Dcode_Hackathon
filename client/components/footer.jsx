@@ -18,7 +18,7 @@ export default function Footer() {
             <Github size={28} className="text-orange-500" />
             {/* Added gradient for Fusion AI text */}
             <span className="text-xl font-semibold tracking-wide bg-gradient-to-r from-orange-400 to-red-600 text-transparent bg-clip-text">
-              Maintainer Dashboard
+              RepoDesk
             </span>
           </div>
           <p className="text-gray-400 text-sm leading-relaxed">

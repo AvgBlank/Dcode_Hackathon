@@ -4,7 +4,7 @@ export default function NeonGradientShape() {
       viewBox="0 0 800 800"
       width="1150"
       height="900"
-      className="absolute right-0 bottom-0 pointer-events-none z-0"
+      className="absolute left-0 bottom-0 pointer-events-none z-0"
       style={{ mixBlendMode: "screen", opacity: 0.75 }}
     >
       <defs>
