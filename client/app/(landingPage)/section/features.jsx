@@ -40,7 +40,7 @@ const features = [
 
 // Reusable Feature Item Component
 const FeatureItem = ({ icon, title, description, align }) => (
-  <div className={`max-w-xs ${align}`}>
+  <div id='repo' className={`max-w-xs ${align}`}>
     <div className={`inline-block p-3 bg-gray-800/50 rounded-full mb-3`}>
         {icon}
     </div>
