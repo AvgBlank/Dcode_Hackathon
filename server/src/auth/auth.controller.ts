@@ -7,6 +7,7 @@ import {
 } from "../utils/env.js";
 import axios from "axios";
 import { fetchGithub } from "../utils/githubFetch.js";
+import prisma from "../lib/prisma.js";
 
 const bodySchema = z.object({
   code: z.string().min(1),
@@ -34,18 +35,40 @@ export const githubOAuthHandler = async (req: Request, res: Response) => {
         Accept: "application/json",
         "Accept-Encoding": "application/json",
       },
-    },
+    }
   );
 
   const access_token = response.data.access_token;
-  const response2 = await fetchGithub(access_token, "/user");
-  console.log(response2);
+
+  const ghUser = await fetchGithub(access_token, "/user");
+
+  const prismaUser = await prisma.user.findFirst({
+    where: { id: ghUser.id },
+  });
+
+  if (!prismaUser) {
+    await prisma.user.create({
+      data: {
+        id: ghUser.id,
+        name: ghUser.name,
+        username: ghUser.login,
+        accessToken: access_token,
+        created: ghUser.created_at,
+      },
+    });
+  } else {
+    await prisma.user.update({
+      where: { id: ghUser.id },
+      data: { accessToken: access_token },
+    });
+  }
 
   res.cookie("gh_token", access_token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "none",
-    maxAge: 1000 * 60 * 60 * 24, // 1 day
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+    domain: process.env.NODE_ENV === "production" ? undefined : "localhost",
   });
 
   return res.status(200).json({ message: "OAuth successful" });

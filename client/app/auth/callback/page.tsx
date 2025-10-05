@@ -1,88 +1,51 @@
-// "use client";
-// import { useEffect } from "react";
-// import { useRouter } from "next/navigation";
-// import apiFetch from "@/utils/apiFetch";
-
-// export default async () => {
-//   const router = useRouter();
-//   useEffect(() => {
-//     const params = new URLSearchParams(window.location.search);
-//     const code = params.get("code");
-//     const state = params.get("state");
-
-//     if (!code) return;
-
-//     const sendCodeToBackend = async () => {
-//       if (state === localStorage.getItem("latestCSRFToken")) {
-//         localStorage.removeItem("latestCSRFToken");
-//         const res = await apiFetch("/api/oauth/github", {
-//           method: "POST",
-//           body: JSON.stringify({ code }),
-//         });
-
-//         if (!res.ok) {
-//           const errorText = await res.text();
-//           throw new Error(errorText);
-//         }
-
-//         router.push("/overview");
-//       } else {
-//         router.push("/")
-//       }
-//     };
-
-//     sendCodeToBackend();
-//   }, []);
-// };
-
-
 "use client";
-
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import apiFetch from "@/utils/apiFetch";
 
-export default function OAuthHandler() {
+export default async () => {
   const router = useRouter();
-
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
     const state = params.get("state");
 
-    if (!code) {
-      router.push("/");
-      return;
-    }
+    if (!code) return;
 
     const sendCodeToBackend = async () => {
-      if (state === localStorage.getItem("latestCSRFToken")) {
-        localStorage.removeItem("latestCSRFToken");
-        try {
-          const res = await apiFetch("/api/oauth/github", {
+      try {
+        if (state === localStorage.getItem("latestCSRFToken")) {
+          localStorage.removeItem("latestCSRFToken");
+          
+          const res = await apiFetch("/api/auth/oauth/github", {
             method: "POST",
             body: JSON.stringify({ code }),
           });
 
           if (!res.ok) {
             const errorText = await res.text();
+            console.error("OAuth failed:", errorText);
             throw new Error(errorText);
           }
 
-          router.push("/overview");
-        } catch (error) {
-          alert("OAuth error: " + (error instanceof Error ? error.message : "Unknown Error"));
+          const data = await res.json();
+          
+          // Small delay to ensure cookie is set
+          setTimeout(() => {
+            router.push("/overview");
+          }, 100);
+        } else {
+          console.error("CSRF token mismatch");
           router.push("/");
         }
-      } else {
-        router.push("/");
+      } catch (error) {
+        console.error("OAuth callback error:", error);
+        router.push("/?error=oauth_failed");
       }
-      router.push("/");
     };
 
     sendCodeToBackend();
-  }, [router]);
-
+  }, []);
   return (
     <div className="flex justify-center items-center h-screen">
       <div
@@ -92,4 +55,4 @@ export default function OAuthHandler() {
       ></div>
     </div>
   );
-}
+};

@@ -13,6 +13,8 @@ import { Sidebar } from "@/components/sidebar";
 import { Suspense } from "react";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/header"; // Import Header
+import { AuthProvider } from "@/lib/auth-context";
+import { Toaster } from "@/components/ui/toaster";
 
 // Initialize fonts
 const _inter = V0_Font_Inter({
@@ -43,17 +45,20 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        {/* Wrap everything in ThemeProvider */}
+        {/* Wrap everything in ThemeProvider and AuthProvider */}
         <ThemeProvider defaultTheme="dark">
-          <Suspense fallback={<div>Loading...</div>}>
-            <div className="flex h-screen overflow-hidden">
-              <Sidebar />
-              <main className="flex-1 overflow-y-auto">
-                {/* Pass required title prop to Header */}
-                {children}
-              </main>
-            </div>
-          </Suspense>
+          <AuthProvider>
+            <Suspense fallback={<div>Loading...</div>}>
+              <div className="flex h-screen overflow-hidden">
+                <Sidebar />
+                <main className="flex-1 overflow-y-auto">
+                  {/* Pass required title prop to Header */}
+                  {children}
+                </main>
+              </div>
+            </Suspense>
+            <Toaster />
+          </AuthProvider>
         </ThemeProvider>
         <Analytics />
       </body>

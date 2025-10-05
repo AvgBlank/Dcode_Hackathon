@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import {
   LayoutDashboard,
@@ -21,6 +21,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useAuth } from "@/lib/auth-context"
+import { useState, useEffect } from "react"
+import ApiClient, { User as UserType } from "@/lib/api"
 
 const navigation = [
   { name: "Overview", href: "/overview", icon: LayoutDashboard },
@@ -31,6 +34,38 @@ const navigation = [
 
 export function Sidebar() {
   const pathname = usePathname()
+  const router = useRouter()
+  const { user: authUser, logout } = useAuth()
+  const [profile, setProfile] = useState<UserType | null>(null)
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const profileData = await ApiClient.getProfile()
+        setProfile(profileData)
+      } catch (error) {
+        console.error('Error fetching profile:', error)
+      }
+    }
+
+    if (authUser) {
+      fetchProfile()
+    }
+  }, [authUser])
+
+  const handleLogout = () => {
+    logout()
+  }
+
+  const getInitials = () => {
+    if (profile?.name) {
+      return profile.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+    }
+    if (profile?.username) {
+      return profile.username[0].toUpperCase()
+    }
+    return 'U'
+  }
 
   return (
     <div className="hidden md:flex h-screen w-64 flex-col border-r border-border bg-sidebar">
@@ -64,12 +99,24 @@ export function Sidebar() {
         <DropdownMenu>
           <DropdownMenuTrigger className="w-full">
             <div className="flex items-center gap-3 rounded-lg bg-sidebar-accent px-3 py-2 hover:bg-sidebar-accent/80 transition-colors cursor-pointer">
-              <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-sm font-semibold">
-                JM
-              </div>
+              {profile?.avatarUrl ? (
+                <img
+                  src={profile.avatarUrl}
+                  alt={profile.name || profile.username}
+                  className="h-8 w-8 rounded-full"
+                />
+              ) : (
+                <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-sm font-semibold">
+                  {getInitials()}
+                </div>
+              )}
               <div className="flex-1 text-left text-sm">
-                <div className="font-medium text-foreground">John Maintainer</div>
-                <div className="text-xs text-muted-foreground">@johnmaint</div>
+                <div className="font-medium text-foreground">
+                  {profile?.name || profile?.username || 'Loading...'}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  @{profile?.username || authUser?.username || ''}
+                </div>
               </div>
               <ChevronDown className="h-4 w-4 text-muted-foreground" />
             </div>
@@ -88,7 +135,7 @@ export function Sidebar() {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer text-destructive">
+            <DropdownMenuItem className="cursor-pointer text-destructive" onClick={handleLogout}>
               <LogOut className="mr-2 h-4 w-4" />
               Logout
             </DropdownMenuItem>

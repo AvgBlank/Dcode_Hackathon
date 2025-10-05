@@ -6,89 +6,91 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { GitPullRequest, AlertCircle, MessageSquare, Filter, AlertTriangle, ExternalLink } from "lucide-react"
+import { GitPullRequest, AlertCircle, MessageSquare, Filter, AlertTriangle, ExternalLink, Loader2 } from "lucide-react"
+import { useState, useEffect } from "react"
+import { ApiClient, PullRequest, Issue, Discussion, TriageStats } from "@/lib/api"
+import { toast } from "@/hooks/use-toast"
+import { useAuth } from "@/lib/auth-context"
 
 export default function TriagePage() {
-  const pullRequests = [
-    {
-      id: 1,
-      number: 234,
-      title: "Add dark mode support to all components",
-      repo: "react-ui-kit",
-      author: "contributor1",
-      status: "needs-review",
-      priority: "high",
-      labels: ["enhancement", "ui"],
-      comments: 5,
-      time: "2 hours ago",
-      additions: 234,
-      deletions: 45,
-    },
-    {
-      id: 2,
-      number: 233,
-      title: "Fix TypeScript types for Button component",
-      repo: "react-ui-kit",
-      author: "contributor2",
-      status: "changes-requested",
-      priority: "medium",
-      labels: ["bug", "typescript"],
-      comments: 3,
-      time: "5 hours ago",
-      additions: 12,
-      deletions: 8,
-    },
-  ]
+  const { isAuthenticated, isLoading: authLoading } = useAuth()
+  const [loading, setLoading] = useState(true)
+  const [stats, setStats] = useState<TriageStats | null>(null)
+  const [pullRequests, setPullRequests] = useState<PullRequest[]>([])
+  const [issues, setIssues] = useState<Issue[]>([])
+  const [discussions, setDiscussions] = useState<Discussion[]>([])
 
-  const issues = [
-    {
-      id: 1,
-      number: 89,
-      title: "Build fails on Windows with Node 18",
-      repo: "next-starter",
-      author: "user1",
-      status: "needs-triage",
-      priority: "critical",
-      labels: ["bug"],
-      comments: 8,
-      time: "4 hours ago",
-    },
-    {
-      id: 2,
-      number: 88,
-      title: "Feature request: Add search functionality to docs",
-      repo: "docs-site",
-      author: "user2",
-      status: "labeled",
-      priority: "medium",
-      labels: ["enhancement", "documentation"],
-      comments: 12,
-      time: "1 day ago",
-    },
-  ]
+  useEffect(() => {
+    const fetchTriageData = async () => {
+      if (!isAuthenticated || authLoading) return;
+      
+      try {
+        setLoading(true)
+        const [statsData, prData, issueData, discussionData] = await Promise.all([
+          ApiClient.getTriageStats(),
+          ApiClient.getPullRequests(),
+          ApiClient.getIssues(),
+          ApiClient.getDiscussions()
+        ])
+        
+        setStats(statsData)
+        setPullRequests(prData)
+        setIssues(issueData)
+        setDiscussions(discussionData)
+      } catch (error) {
+        console.error('Error fetching triage data:', error)
+        toast({
+          title: "Error",
+          description: "Failed to load triage data. Please try again.",
+          variant: "destructive",
+        })
+      } finally {
+        setLoading(false)
+      }
+    }
 
-  const discussions = [
-    {
-      id: 1,
-      title: "How to customize theme colors?",
-      repo: "react-ui-kit",
-      author: "user4",
-      category: "Q&A",
-      status: "unanswered",
-      comments: 3,
-      time: "6 hours ago",
-    },
-    {
-      id: 2,
-      title: "Proposal: Add support for custom hooks",
-      repo: "react-ui-kit",
-      author: "user5",
-      category: "Ideas",
-      status: "answered",
-      comments: 18,
-      time: "2 days ago",
-    },
-  ]
+    fetchTriageData()
+  }, [isAuthenticated, authLoading])
+
+  if (authLoading || loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="flex items-center space-x-2">
+            <Loader2 className="h-6 w-6 animate-spin" />
+            <span>Loading triage data...</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Card className="w-full max-w-md">
+            <CardContent className="pt-6">
+              <div className="text-center">
+                <AlertTriangle className="h-12 w-12 mx-auto text-yellow-500 mb-4" />
+                <h2 className="text-xl font-semibold mb-2">Authentication Required</h2>
+                <p className="text-muted-foreground mb-4">
+                  Please log in with GitHub to access the triage center.
+                </p>
+                <Button asChild>
+                  <a href="/auth/login">Sign in with GitHub</a>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
+  }
+
+
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -105,7 +107,7 @@ export default function TriagePage() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-foreground">12</div>
+              <div className="text-3xl font-bold text-foreground">{stats?.pendingReviews || 0}</div>
               <p className="text-xs text-muted-foreground mt-1.5">Pull requests waiting</p>
             </CardContent>
           </Card>
@@ -118,7 +120,7 @@ export default function TriagePage() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-foreground">8</div>
+              <div className="text-3xl font-bold text-foreground">{stats?.openIssues || 0}</div>
               <p className="text-xs text-muted-foreground mt-1.5">Issues to categorize</p>
             </CardContent>
           </Card>
@@ -131,7 +133,7 @@ export default function TriagePage() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-foreground">5</div>
+              <div className="text-3xl font-bold text-foreground">{stats?.discussionsNeedingResponse || 0}</div>
               <p className="text-xs text-muted-foreground mt-1.5">Discussions pending</p>
             </CardContent>
           </Card>
@@ -144,7 +146,7 @@ export default function TriagePage() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-foreground">3</div>
+              <div className="text-3xl font-bold text-foreground">{stats?.priorityItems || 0}</div>
               <p className="text-xs text-muted-foreground mt-1.5">High priority items</p>
             </CardContent>
           </Card>
@@ -202,38 +204,40 @@ export default function TriagePage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <span>{pr.repo}</span>
+                      <span>{pr.repository.owner}/{pr.repository.name}</span>
                       <span>•</span>
-                      <span>{pr.author}</span>
+                      <span>{pr.author.login}</span>
                       <span>•</span>
-                      <span>{pr.time}</span>
+                      <span>{new Date(pr.createdAt).toLocaleDateString()}</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 flex-wrap">
                         <Badge 
                           className={
-                            pr.status === "needs-review" 
-                              ? "bg-blue-500/10 text-blue-600 border-blue-500/20" 
-                              : pr.status === "changes-requested"
-                              ? "bg-orange-500/10 text-orange-600 border-orange-500/20"
-                              : "bg-gray-500/10 text-gray-600 border-gray-500/20"
+                            pr.state === "open" 
+                              ? "bg-green-500/10 text-green-600 border-green-500/20" 
+                              : pr.state === "closed"
+                              ? "bg-red-500/10 text-red-600 border-red-500/20"
+                              : "bg-purple-500/10 text-purple-600 border-purple-500/20"
                           }
                           variant="outline"
                         >
-                          {pr.status.replace("-", " ")}
+                          {pr.state}
                         </Badge>
-                        <Badge 
-                          className={
-                            pr.priority === "high" 
-                              ? "bg-red-500/10 text-red-600 border-red-500/20" 
-                              : pr.priority === "medium"
-                              ? "bg-yellow-500/10 text-yellow-600 border-yellow-500/20"
-                              : "bg-green-500/10 text-green-600 border-green-500/20"
-                          }
-                          variant="outline"
-                        >
-                          {pr.priority} priority
-                        </Badge>
+                        {pr.priority && (
+                          <Badge 
+                            className={
+                              pr.priority === "high" 
+                                ? "bg-red-500/10 text-red-600 border-red-500/20" 
+                                : pr.priority === "medium"
+                                ? "bg-yellow-500/10 text-yellow-600 border-yellow-500/20"
+                                : "bg-green-500/10 text-green-600 border-green-500/20"
+                            }
+                            variant="outline"
+                          >
+                            {pr.priority} priority
+                          </Badge>
+                        )}
                         {pr.labels.map((label) => (
                           <Badge key={label} variant="secondary" className="text-xs">
                             {label}
@@ -243,18 +247,34 @@ export default function TriagePage() {
                       <div className="flex items-center gap-3 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <MessageSquare className="h-4 w-4" />
-                          <span>{pr.comments}</span>
+                          <span>{pr.labels.length} labels</span>
                         </div>
                         <div className="text-xs">
-                          <span className="text-green-500">+{pr.additions}</span>
-                          <span className="text-red-500 ml-1">-{pr.deletions}</span>
+                          <span>Updated: {new Date(pr.updatedAt).toLocaleDateString()}</span>
                         </div>
                       </div>
                     </div>
-                    <Button size="sm" variant="outline" className="gap-2 bg-transparent">
-                      <ExternalLink className="h-4 w-4" />
-                      View on GitHub
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button 
+                        size="sm" 
+                        variant="default" 
+                        className="gap-2"
+                        onClick={() => window.open(`https://github.com/${pr.repository.owner}/${pr.repository.name}/pull/${pr.number}`, '_blank')}
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                        Review PR
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="gap-2"
+                        onClick={() => {
+                          navigator.clipboard.writeText(`PR #${pr.number}: ${pr.title}`);
+                        }}
+                      >
+                        📋 Copy
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -273,42 +293,38 @@ export default function TriagePage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <span>{issue.repo}</span>
+                      <span>{issue.repository.owner}/{issue.repository.name}</span>
                       <span>•</span>
-                      <span>{issue.author}</span>
+                      <span>{issue.author.login}</span>
                       <span>•</span>
-                      <span>{issue.time}</span>
+                      <span>{new Date(issue.createdAt).toLocaleDateString()}</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 flex-wrap">
                         <Badge 
                           className={
-                            issue.status === "needs-triage" 
-                              ? "bg-orange-500/10 text-orange-600 border-orange-500/20" 
-                              : issue.status === "labeled"
-                              ? "bg-green-500/10 text-green-600 border-green-500/20"
-                              : issue.status === "assigned"
-                              ? "bg-blue-500/10 text-blue-600 border-blue-500/20"
-                              : "bg-gray-500/10 text-gray-600 border-gray-500/20"
+                            issue.state === "open" 
+                              ? "bg-green-500/10 text-green-600 border-green-500/20" 
+                              : "bg-red-500/10 text-red-600 border-red-500/20"
                           }
                           variant="outline"
                         >
-                          {issue.status.replace("-", " ")}
+                          {issue.state}
                         </Badge>
-                        <Badge 
-                          className={
-                            issue.priority === "critical" 
-                              ? "bg-red-500/10 text-red-600 border-red-500/20" 
-                              : issue.priority === "high"
-                              ? "bg-red-400/10 text-red-500 border-red-400/20"
-                              : issue.priority === "medium"
-                              ? "bg-yellow-500/10 text-yellow-600 border-yellow-500/20"
-                              : "bg-green-500/10 text-green-600 border-green-500/20"
-                          }
-                          variant="outline"
-                        >
-                          {issue.priority} priority
-                        </Badge>
+                        {issue.priority && (
+                          <Badge 
+                            className={
+                              issue.priority === "high"
+                                ? "bg-red-400/10 text-red-500 border-red-400/20"
+                                : issue.priority === "medium"
+                                ? "bg-yellow-500/10 text-yellow-600 border-yellow-500/20"
+                                : "bg-green-500/10 text-green-600 border-green-500/20"
+                            }
+                            variant="outline"
+                          >
+                            {issue.priority} priority
+                          </Badge>
+                        )}
                         {issue.labels.map((label) => (
                           <Badge key={label} variant="secondary" className="text-xs">
                             {label}
@@ -320,10 +336,34 @@ export default function TriagePage() {
                         <span>{issue.comments}</span>
                       </div>
                     </div>
-                    <Button size="sm" variant="outline" className="gap-2 bg-transparent">
-                      <ExternalLink className="h-4 w-4" />
-                      View on GitHub
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button 
+                        size="sm" 
+                        variant="default" 
+                        className="gap-2"
+                        onClick={() => window.open(`https://github.com/${issue.repository.owner}/${issue.repository.name}/issues/${issue.number}`, '_blank')}
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                        Resolve Issue
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="gap-2"
+                        onClick={() => {
+                          navigator.clipboard.writeText(`Issue #${issue.number}: ${issue.title}`);
+                        }}
+                      >
+                        📋 Copy
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="secondary" 
+                        className="gap-2"
+                      >
+                        🔄 Mark Progress
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -337,27 +377,23 @@ export default function TriagePage() {
                   <div className="space-y-3">
                     <h3 className="text-base font-semibold text-foreground">{discussion.title}</h3>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <span>{discussion.repo}</span>
+                      <span>{discussion.repository.owner}/{discussion.repository.name}</span>
                       <span>•</span>
-                      <span>{discussion.author}</span>
+                      <span>{discussion.author.login}</span>
                       <span>•</span>
-                      <span>{discussion.time}</span>
+                      <span>{new Date(discussion.createdAt).toLocaleDateString()}</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 flex-wrap">
                         <Badge 
                           className={
-                            discussion.status === "unanswered" 
-                              ? "bg-orange-500/10 text-orange-600 border-orange-500/20" 
-                              : discussion.status === "answered"
+                            discussion.answerChosenAt 
                               ? "bg-green-500/10 text-green-600 border-green-500/20"
-                              : discussion.status === "closed"
-                              ? "bg-gray-500/10 text-gray-600 border-gray-500/20"
-                              : "bg-blue-500/10 text-blue-600 border-blue-500/20"
+                              : "bg-orange-500/10 text-orange-600 border-orange-500/20"
                           }
                           variant="outline"
                         >
-                          {discussion.status}
+                          {discussion.answerChosenAt ? "Answered" : "Unanswered"}
                         </Badge>
                         <Badge 
                           variant="secondary" 
@@ -368,13 +404,41 @@ export default function TriagePage() {
                       </div>
                       <div className="flex items-center gap-1 text-sm text-muted-foreground">
                         <MessageSquare className="h-4 w-4" />
-                        <span>{discussion.comments}</span>
+                        <span>{discussion.commentCount}</span>
                       </div>
                     </div>
-                    <Button size="sm" variant="outline" className="gap-2 bg-transparent">
-                      <ExternalLink className="h-4 w-4" />
-                      View on GitHub
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button 
+                        size="sm" 
+                        variant="default" 
+                        className="gap-2"
+                        onClick={() => window.open(`https://github.com/${discussion.repository.owner}/${discussion.repository.name}/discussions/${discussion.id}`, '_blank')}
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                        Join Discussion
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="gap-2"
+                        onClick={() => {
+                          navigator.clipboard.writeText(`Discussion: ${discussion.title}`);
+                        }}
+                      >
+                        📋 Copy
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="secondary" 
+                        className="gap-2"
+                        onClick={() => {
+                          // In a real app, this would mark as helpful
+                          console.log(`Marked discussion ${discussion.id} as helpful`);
+                        }}
+                      >
+                        👍 Helpful
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
